@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <style>
+        canvas {
+
+        }
+    </style>
+</head>
+<body>
+
+<button id="face_btn">Face Detect</button>
+<button id="export_btn">Export</button>
+<div>
+    <video id="vid" src="video.mp4" controls></video>
+    <div id="imager"></div>
+</div>
+
+<canvas id="output"></canvas>
+<script src="http://code.jquery.com/jquery-git1.js"></script>
+<script src="ccv.js"></script>
+<script src="face.js"></script>
+<script src="jquery.facedetection.js"></script>
+
+<script>
+
+    var video, canvas, ctx, img;
+    var scope = this;
+    $(document).ready(function () {
+        video = $("#vid").get(0);
+        canvas = document.getElementById("output");
+        ctx = canvas.getContext("2d");
+        /*video.onprogress = function(e) {
+         })*/
+
+        $("#face_btn").on("click", function () {
+
+            // Draw the video to canvas
+            ctx.canvas.width  = 724;
+            ctx.canvas.height = 408;
+            ctx.drawImage(video, 0, 0, 724, 408, 0, 0, canvas.width, canvas.height);
+            img = document.createElement("img");
+            img.src = canvas.toDataURL();
+            $('body').append(img);
+            // use the face detection library to find the face
+            //var comp = ccv.detect_objects(canvas, cascade, 2, 1);
+            //var comp =  ccv.detect_objects({canvas : (ccv.pre(canvas)), cascade: cascade, interval: 2, min_neighbors: 1});
+        });
+
+
+        $('#export_btn').on("click", function () {
+            jQuery("img").each(function () {
+                var img = this;
+                // Get faces cooridnates
+                var coordinates = jQuery(img).faceDetection();
+                // Make boxes if faces are found
+                if (coordinates.length) {
+                    coordinates.forEach(function (coord) {
+                        jQuery("<div>", {
+                            css: {
+                                position: "absolute",
+                                left: coord.positionX + 5 + "px",
+                                top: coord.positionY + 5 + "px",
+                                width: coord.width + "px",
+                                height: coord.height + "px",
+                                border: "3px solid white"
+                            }
+                        }).appendTo(img.parentNode);
+                    });
+                }
+            });
+        })
+    });
+
+
+</script>
+
+</body>
+</html>
